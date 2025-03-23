@@ -1,4 +1,19 @@
+document.addEventListener(
+  "touchmove",
+  (event) => {
+    // If more than one finger, block
+    if (event.touches.length > 1) {
+      event.preventDefault();
+    }
+  },
+  { passive: false }
+);
+
 document.addEventListener("DOMContentLoaded", () => {
+  // Add a variable to decide which control mode we use: "touch" or "swipe".
+  // Default: "touch"
+  let controlMode = "swipe";
+
   const canvas = document.createElement("canvas");
   document.body.appendChild(canvas);
   const ctx = canvas.getContext("2d");
@@ -45,27 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Car image
   const carImage = new Image();
-  carImage.src = "car.png";
+  carImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5fBYgwam0cnqboOg?embed=1&width=300&height=274";
   carImage.onload = () => { carImageLoaded = true; };
 
   // Item image
   const itemImage = new Image();
-  itemImage.src = "fuelboost.png";
+  itemImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5i7Cc_6QoJ6oJVkQ?embed=1&width=74&height=100";
   itemImage.onload = () => { itemImageLoaded = true; };
 
   // Refill button image
   const refillImage = new Image();
-  refillImage.src = "gas station.png";
+  refillImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5u3MLhVqNwn-z29Q?embed=1&width=1024&height=1024";
 
   // Cloud image
   const cloudImage = new Image();
-  cloudImage.src = "cloud.png";
+  cloudImage.src = "https://api.onedrive.com/v1.0/shares/s!Apvitbstrmd_s_5pHqaF2pH380bATQ/root/content";
   cloudImage.onload = () => {
     cloudImageLoaded = true;
   };
 
   // BACKGROUND MUSIC (OneDrive link)
-  const gameMusic = new Audio("autolied.mp3");
+  const gameMusic = new Audio("https://api.onedrive.com/v1.0/shares/s!Apvitbstrmd_s_5v0TltmZ_7a5JqEw/root/content");
   gameMusic.loop = true;
 
   // CAR
@@ -114,7 +129,6 @@ document.addEventListener("DOMContentLoaded", () => {
     });
 }
 
-
   // move markings downward
   function updateMarkings() {
   for (let i = roadMarkings.length - 1; i >= 0; i--) {
@@ -132,6 +146,7 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }
 }
+
 
   // draw markings as trapezoids
   function drawMarkings() {
@@ -496,24 +511,59 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   }, 800);
 
-  // ---------------------------
-  //  IMPROVED TOUCH CONTROLS
-  // ---------------------------
-  canvas.addEventListener("touchstart", (event) => {
-    if (!gameRunning) return;
-    const touchX = event.touches[0].clientX;
+  // Variables for swipe logic
+  let swipeStartX = 0;
+  let swipeStartY = 0;
+  let swipeThreshold = 50; // minimal distance (px) to count as a swipe
 
-    // find which lane center is closest
-    let closestLane = 0;
-    let minDist = Infinity;
-    for (let i = 0; i < laneCount; i++) {
-      const dist = Math.abs(touchX - bottomLaneCenters[i]);
-      if (dist < minDist) {
-        minDist = dist;
-        closestLane = i;
+  // Decide between old "touch" or "swipe" logic:
+  if (controlMode === "touch") {
+    // Old Touch logic: move to nearest lane center on tap
+    canvas.addEventListener("touchstart", (event) => {
+      if (!gameRunning) return;
+      const touchX = event.touches[0].clientX;
+      // find which lane center is closest
+      let closestLane = 0;
+      let minDist = Infinity;
+      for (let i = 0; i < laneCount; i++) {
+        const dist = Math.abs(touchX - bottomLaneCenters[i]);
+        if (dist < minDist) {
+          minDist = dist;
+          closestLane = i;
+        }
       }
-    }
-    // set target lane
-    targetLane = closestLane;
-  });
+      // set target lane
+      targetLane = closestLane;
+    });
+  } else {
+    // Swipe logic
+    // We'll track touchstart and touchend, measure horizontal difference
+
+    canvas.addEventListener("touchstart", (event) => {
+      if (!gameRunning) return;
+      swipeStartX = event.touches[0].clientX;
+      swipeStartY = event.touches[0].clientY;
+    });
+
+    canvas.addEventListener("touchend", (event) => {
+      if (!gameRunning) return;
+      // measure final X
+      const endX = event.changedTouches[0].clientX;
+      const endY = event.changedTouches[0].clientY;
+      const distX = endX - swipeStartX;
+      const distY = endY - swipeStartY;
+
+      // only consider horizontal swipes if |distX| > |distY|
+      if (Math.abs(distX) > Math.abs(distY) && Math.abs(distX) > swipeThreshold) {
+        // negative => swipe left, positive => swipe right
+        if (distX < 0 && currentLane > 0) {
+          // left lane
+          targetLane = currentLane = Math.max(0, currentLane - 1);
+        } else if (distX > 0 && currentLane < laneCount - 1) {
+          // right lane
+          targetLane = currentLane = Math.min(laneCount - 1, currentLane + 1);
+        }
+      }
+    });
+  }
 });
