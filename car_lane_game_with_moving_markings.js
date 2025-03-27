@@ -60,27 +60,27 @@ document.addEventListener("DOMContentLoaded", () => {
 
   // Car image
   const carImage = new Image();
-  carImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5fBYgwam0cnqboOg?embed=1&width=300&height=274";
+  carImage.src = "car.png";
   carImage.onload = () => { carImageLoaded = true; };
 
   // Item image
   const itemImage = new Image();
-  itemImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5i7Cc_6QoJ6oJVkQ?embed=1&width=74&height=100";
+  itemImage.src = "fuelboost.png";
   itemImage.onload = () => { itemImageLoaded = true; };
 
   // Refill button image
   const refillImage = new Image();
-  refillImage.src = "https://1drv.ms/i/s!Apvitbstrmd_s_5u3MLhVqNwn-z29Q?embed=1&width=1024&height=1024";
+  refillImage.src = "gas station.png";
 
   // Cloud image
   const cloudImage = new Image();
-  cloudImage.src = "https://api.onedrive.com/v1.0/shares/s!Apvitbstrmd_s_5pHqaF2pH380bATQ/root/content";
+  cloudImage.src = "cloud.png";
   cloudImage.onload = () => {
     cloudImageLoaded = true;
   };
 
   // BACKGROUND MUSIC (OneDrive link)
-  const gameMusic = new Audio("https://api.onedrive.com/v1.0/shares/s!Apvitbstrmd_s_5v0TltmZ_7a5JqEw/root/content");
+  const gameMusic = new Audio("autolied.mp3");
   gameMusic.loop = true;
 
   // CAR
