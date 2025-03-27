@@ -5,6 +5,11 @@ const urlsToCache = [
   "./car_lane_game_with_moving_markings.js", // your JS
   "./manifest.json",
   // plus any images or assets you want offline
+  "./autolied.mp3",
+  "./car.png",
+  "./cloud.png",
+  "./fuelboost.png",
+  "./gas station.png",
 ];
 
 // Install event: cache all your game’s assets
