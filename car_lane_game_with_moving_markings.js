@@ -485,6 +485,39 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // ---------------------------
+  //  HANDLE RESIZE
+  // ---------------------------
+  // 1) Listen for `resize` events (covers rotation on mobile and resizing on desktop)
+  window.addEventListener("resize", handleResize);
+  
+  // 2) A function that re-initializes layout whenever the screen size changes
+  function handleResize() {
+    // Update canvas to new window size
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+  
+    // Recalculate laneWidth, lane borders, lane centers, etc.
+    // e.g.:
+    const laneWidth = (canvas.width * 0.8) / laneCount;
+    
+    // Recalculate your bottomLaneBorders, topLaneBorders, and bottomLaneCenters, etc.
+    // ...
+    
+    // Recalculate the car's width/height
+    const carWidth = laneWidth * CAR_SCALE;
+    const carHeight = carWidth * CAR_ASPECT;
+    // And re-place the car near the bottom
+    car.width = carWidth;
+    car.height = carHeight;
+    car.x = bottomLaneCenters[currentLane] - carWidth / 2;
+    car.y = canvas.height - carHeight - 20;
+  
+    // Optionally re-place items or remove them
+    // Optionally re-place clouds
+    placeClouds();
+  }
+  
+  // ---------------------------
   //  GAME LOOP
   // ---------------------------
   function gameLoop() {
