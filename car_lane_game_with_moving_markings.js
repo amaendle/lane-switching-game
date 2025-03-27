@@ -26,17 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const laneCount = 4;
 
   // LANE BORDERS AND CENTERS
-  const laneWidth = (canvas.width * 0.8) / laneCount;
-  const bottomLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+  laneWidth = (canvas.width * 0.8) / laneCount;
+  bottomLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
     canvas.width * (0.1 + i * (0.8 / laneCount))
   );
-  const topLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+  topLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
     canvas.width * (0.4 + i * (0.2 / laneCount))
   );
-  const bottomLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+  bottomLaneCenters = Array.from({ length: laneCount }, (_, i) =>
     (bottomLaneBorders[i] + bottomLaneBorders[i + 1]) / 2
   );
-  const topLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+  topLaneCenters = Array.from({ length: laneCount }, (_, i) =>
     (topLaneBorders[i] + topLaneBorders[i + 1]) / 2
   );
 
@@ -84,8 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
   gameMusic.loop = true;
 
   // CAR
-  const carWidth = laneWidth * CAR_SCALE;
-  const carHeight = carWidth * CAR_ASPECT;
+  carWidth = laneWidth * CAR_SCALE;
+  carHeight = carWidth * CAR_ASPECT;
   const car = {
     width: carWidth,
     height: carHeight,
@@ -495,17 +495,25 @@ document.addEventListener("DOMContentLoaded", () => {
     // Update canvas to new window size
     canvas.width = window.innerWidth;
     canvas.height = window.innerHeight;
-  
-    // Recalculate laneWidth, lane borders, lane centers, etc.
-    // e.g.:
-    const laneWidth = (canvas.width * 0.8) / laneCount;
     
-    // Recalculate your bottomLaneBorders, topLaneBorders, and bottomLaneCenters, etc.
-    // ...
+    // Recompute laneWidth, lane borders, centers
+    laneWidth = (canvas.width * 0.8) / laneCount;
+    bottomLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+      canvas.width * (0.1 + i * (0.8 / laneCount))
+    );
+    topLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+      canvas.width * (0.4 + i * (0.2 / laneCount))
+    );
+    bottomLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+      (bottomLaneBorders[i] + bottomLaneBorders[i + 1]) / 2
+    );
+    topLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+      (topLaneBorders[i] + topLaneBorders[i + 1]) / 2
+    );
     
     // Recalculate the car's width/height
-    const carWidth = laneWidth * CAR_SCALE;
-    const carHeight = carWidth * CAR_ASPECT;
+    carWidth = laneWidth * CAR_SCALE;
+    carHeight = carWidth * CAR_ASPECT;
     // And re-place the car near the bottom
     car.width = carWidth;
     car.height = carHeight;
