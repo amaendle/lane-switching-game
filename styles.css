@@ -3,6 +3,18 @@ html, body {
   padding: 0;
 }
 
+body
+{
+  overscroll-behavior-y: contain;
+  overflow: hidden;
+}
+
 canvas {
     touch-action: none; /* Prevent default gestures like scrolling on the canvas */
 }
+
+/* hide page scrollbar */
+html { scrollbar-width: none; } /* Firefox */
+body { -ms-overflow-style: none; } /* IE and Edge */
+body::-webkit-scrollbar, body::-webkit-scrollbar-button { display: none; } /* Chrome */
+/* end hide page scrollbar */
