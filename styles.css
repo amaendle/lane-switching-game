@@ -2,3 +2,7 @@ html, body {
   margin: 0;
   padding: 0;
 }
+
+canvas {
+    touch-action: none; /* Prevent default gestures like scrolling on the canvas */
+}
