@@ -26,17 +26,17 @@ document.addEventListener("DOMContentLoaded", () => {
   const laneCount = 4;
 
   // LANE BORDERS AND CENTERS
-  laneWidth = (canvas.width * 0.8) / laneCount;
-  bottomLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+  let laneWidth = (canvas.width * 0.8) / laneCount;
+  let bottomLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
     canvas.width * (0.1 + i * (0.8 / laneCount))
   );
-  topLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
+  let topLaneBorders = Array.from({ length: laneCount + 1 }, (_, i) =>
     canvas.width * (0.4 + i * (0.2 / laneCount))
   );
-  bottomLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+  let bottomLaneCenters = Array.from({ length: laneCount }, (_, i) =>
     (bottomLaneBorders[i] + bottomLaneBorders[i + 1]) / 2
   );
-  topLaneCenters = Array.from({ length: laneCount }, (_, i) =>
+  let topLaneCenters = Array.from({ length: laneCount }, (_, i) =>
     (topLaneBorders[i] + topLaneBorders[i + 1]) / 2
   );
 
@@ -84,8 +84,8 @@ document.addEventListener("DOMContentLoaded", () => {
   gameMusic.loop = true;
 
   // CAR
-  carWidth = laneWidth * CAR_SCALE;
-  carHeight = carWidth * CAR_ASPECT;
+  let carWidth = laneWidth * CAR_SCALE;
+  let carHeight = carWidth * CAR_ASPECT;
   const car = {
     width: carWidth,
     height: carHeight,
