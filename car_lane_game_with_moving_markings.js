@@ -53,6 +53,10 @@ document.addEventListener("DOMContentLoaded", () => {
   let fuel = 0; // starts empty
   let gameRunning = false;
 
+  const BASE_SPEED = 5;
+  let currentSpeed = BASE_SPEED;
+  let speedBoostTimeout = null;
+
   // IMAGES
   let carImageLoaded = false;
   let itemImageLoaded = false;
@@ -82,6 +86,22 @@ document.addEventListener("DOMContentLoaded", () => {
   // BACKGROUND MUSIC (OneDrive link)
   const gameMusic = new Audio("autolied.mp3");
   gameMusic.loop = true;
+
+  // Sound when collecting a fuel boost
+  const boostSound = new Audio("assets/boost.mp3");
+
+  const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  function playHonk() {
+    audioCtx.resume();
+    const osc = audioCtx.createOscillator();
+    const gain = audioCtx.createGain();
+    osc.type = "square";
+    osc.frequency.value = 440;
+    gain.gain.value = 0.1;
+    osc.connect(gain).connect(audioCtx.destination);
+    osc.start();
+    osc.stop(audioCtx.currentTime + 0.2);
+  }
 
   // CAR
   let carWidth = laneWidth * CAR_SCALE;
@@ -124,7 +144,6 @@ document.addEventListener("DOMContentLoaded", () => {
       // so the marking's bottom is at y=0 initially (just entering screen)
       y: -length,
       length,
-      speed: 5,  // same as item speed
       markingHalf
     });
 }
@@ -137,7 +156,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // If there's fuel > 0, move the markings downward
     // If fuel = 0, they remain in place (car is "stopped")
     if (fuel > 0) {
-      m.y += m.speed;
+      m.y += currentSpeed;
     }
 
     // Remove if offscreen
@@ -241,6 +260,19 @@ document.addEventListener("DOMContentLoaded", () => {
     });
   }
 
+  function triggerSpeedBoost() {
+    currentSpeed = BASE_SPEED * 2;
+    boostSound.currentTime = 0;
+    audioCtx.resume();
+    boostSound.play().catch((err) => {
+      console.error("Boost sound failed:", err);
+    });
+    if (speedBoostTimeout) clearTimeout(speedBoostTimeout);
+    speedBoostTimeout = setTimeout(() => {
+      currentSpeed = BASE_SPEED;
+    }, 1000);
+  }
+
   // ---------------------------
   //  GET LANE X
   // ---------------------------
@@ -282,7 +314,7 @@ document.addEventListener("DOMContentLoaded", () => {
     // Move items
     for (let i = items.length - 1; i >= 0; i--) {
       const item = items[i];
-      item.y += 5;
+      item.y += currentSpeed;
       item.x = getLaneX(item.laneIndex, item.y) - item.width / 2;
 
       if (item.y > canvas.height) {
@@ -301,6 +333,10 @@ document.addEventListener("DOMContentLoaded", () => {
         score++;
         fuel += 5;
         if (fuel > 100) fuel = 100;
+        if (navigator.vibrate) {
+          navigator.vibrate(100);
+        }
+        triggerSpeedBoost();
       }
     }
   }
@@ -474,6 +510,11 @@ document.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       fuel = 100;
       gameRunning = true;
+      currentSpeed = BASE_SPEED;
+      if (speedBoostTimeout) {
+        clearTimeout(speedBoostTimeout);
+        speedBoostTimeout = null;
+      }
 
       // Attempt to play music
       gameMusic.play().catch((err) => {
@@ -551,6 +592,25 @@ document.addEventListener("DOMContentLoaded", () => {
       spawnMarking(i, 80);
     }
   }, 800);
+
+  function handleCarTouch(event) {
+    if (!gameRunning) return;
+    const rect = canvas.getBoundingClientRect();
+    const point = event.touches ? event.touches[0] : event;
+    const x = point.clientX - rect.left;
+    const y = point.clientY - rect.top;
+    if (
+      x >= car.x &&
+      x <= car.x + car.width &&
+      y >= car.y &&
+      y <= car.y + car.height
+    ) {
+      playHonk();
+    }
+  }
+
+  canvas.addEventListener("touchstart", handleCarTouch);
+  canvas.addEventListener("mousedown", handleCarTouch);
 
   // Variables for swipe logic
   let swipeStartX = 0;
